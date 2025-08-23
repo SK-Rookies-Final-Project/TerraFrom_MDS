@@ -1,0 +1,37 @@
+networks:
+  kafka-network:
+    driver: bridge
+
+services:
+  ksqldb:
+    image: confluentinc/cp-ksqldb-server:7.7.1
+    container_name: ksqldb
+    networks:
+      - kafka-network
+    ports:
+      - "8088:8088"
+    environment:
+      KSQL_LISTENERS: "http://0.0.0.0:8088"
+      KSQL_ADVERTISED_LISTENER: "http://ksqldb:8088"
+      KSQL_BOOTSTRAP_SERVERS: "broker1:29092,broker2:39092,broker3:49092"
+      KSQL_SERVICE_ID: "ksql-cluster1"
+      CONFLUENT_MONITORING_INTERCEPTOR_BOOTSTRAP_SERVERS: "broker1:29092,broker2:39092,broker3:49092"
+      CONFLUENT_MONITORING_INTERCEPTOR_TOPIC: "_confluent-monitoring"
+      KSQL_INTERNAL_TOPIC_REPLICAS: "3"
+      KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry1:8081,http://schema-registry2:8082"
+      KSQL_STREAMS_REPLICATION_FACTOR: "3"
+      KSQL_STREAMS_STATE_DIR: "/data/ksql"
+      KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+      KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_LOGGING_PROCESSING_TOPIC_PARTITIONS: "2"
+      KSQL_CONFLUENT_SUPPORT_METRICS_ENABLE: "false"
+
+  ksqldb-cli:
+    image: confluentinc/cp-ksqldb-cli:7.7.1
+    container_name: ksqldb-cli
+    networks:
+      - kafka-network
+    depends_on:
+      - ksqldb
+    entrypoint: /bin/sh
+    tty: true

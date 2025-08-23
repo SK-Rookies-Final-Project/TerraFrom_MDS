@@ -1,0 +1,35 @@
+networks:
+  kafka-network:
+    driver: bridge
+
+services:
+  schema-registry1:
+    image: confluentinc/cp-schema-registry:7.7.1
+    container_name: schema-registry1
+    
+    networks:
+      - kafka-network
+    ports:
+      - "18081:8081"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry1
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8081'
+      SCHEMA_REGISTRY_DEBUG: true
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: '_schemas'
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 3
+
+  schema-registry2:
+    image: confluentinc/cp-schema-registry:7.7.1
+    container_name: schema-registry2
+    networks:
+      - kafka-network
+    ports:
+      - "18082:8082"
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry2
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8082'
+      SCHEMA_REGISTRY_DEBUG: true
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: '_schemas'
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 3

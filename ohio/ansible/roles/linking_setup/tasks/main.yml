@@ -1,0 +1,65 @@
+# 클러스터 링크 구성 파일 및 쉘 스크립트를 원격 호스트로 복사
+- name: Copy link-link.config to remote host
+  copy:
+    src: link-link.config
+    dest: /home/ubuntu/link-link.config
+  become: yes
+  become_user: ubuntu
+
+- name: Copy create-cluster-link.sh to remote host
+  copy:
+    src: create-cluster-link.sh
+    dest: /home/ubuntu/create-cluster-link.sh
+    mode: '0755'
+  become: yes
+
+- name: Copy create-topic.sh to remote host
+  copy:
+    src: create-topic.sh
+    dest: /home/ubuntu/create-topic.sh
+    mode: '0755'
+  become: yes
+
+- name: Copy send-topic.sh to remote host
+  copy:
+    src: send-topic.sh
+    dest: /home/ubuntu/send-topic.sh
+    mode: '0755'
+  become: yes
+
+- name: Copy topic-mirror.sh to remote host
+  copy:
+    src: topic-mirror.sh
+    dest: /home/ubuntu/topic-mirror.sh
+    mode: '0755'
+  become: yes
+
+# 파일들을 broker1 컨테이너로 복사
+- name: Copy link-link.config into broker1 container
+  shell: docker cp /home/ubuntu/link-link.config broker1:/home/appuser
+  become: yes
+
+- name: Copy create-cluster-link.sh into broker1 container
+  shell: docker cp /home/ubuntu/create-cluster-link.sh broker1:/home/appuser
+  become: yes
+
+- name: Copy create-topic.sh into broker1 container
+  shell: docker cp /home/ubuntu/create-topic.sh broker1:/home/appuser
+  become: yes
+
+- name: Copy send-topic.sh into broker1 container
+  shell: docker cp /home/ubuntu/send-topic.sh broker1:/home/appuser
+  become: yes
+
+- name: Copy topic-mirror.sh into broker1 container
+  shell: docker cp /home/ubuntu/topic-mirror.sh broker1:/home/appuser
+  become: yes
+
+# link-link.config 파일을 broker2, broker3 컨테이너로 복사
+- name: Copy link-link.config into broker2 container
+  shell: docker cp /home/ubuntu/link-link.config broker2:/home/appuser
+  become: yes
+
+- name: Copy link-link.config into broker3 container
+  shell: docker cp /home/ubuntu/link-link.config broker3:/home/appuser
+  become: yes

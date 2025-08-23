@@ -1,0 +1,101 @@
+- name: Copy jdbc-mysql-source.json to remote Docker host
+  copy:
+    src: jdbc-mysql-source.json
+    dest: /home/ubuntu/jdbc-mysql-source.json
+  become: yes
+  become_user: ubuntu
+
+- name: Copy jdbc-postgre-sink.json to remote Docker host
+  copy:
+    src: jdbc-postgre-sink.json
+    dest: /home/ubuntu/jdbc-postgre-sink.json
+  become: yes
+  become_user: ubuntu
+
+- name: Copy create-connector.sh to remote Docker host
+  copy:
+    src: create-connector.sh
+    dest: /home/ubuntu/create-connector.sh
+  become: yes
+  become_user: ubuntu
+
+- name: Ensure create-connector.sh has execute permission
+  ansible.builtin.file:
+    path: /home/ubuntu/create-connector.sh
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  become: yes
+
+# JDBC 드라이버 설치
+- name: Download MySQL Connector/J .deb package (bypass redirect)
+  get_url:
+    url: https://cdn.mysql.com/archives/mysql-connector-java-8.4/mysql-connector-j_8.4.0-1ubuntu24.04_all.deb
+    dest: /home/ubuntu/mysql-connector-j_8.4.0-1ubuntu24.04_all.deb
+    timeout: 30
+  become: yes
+
+- name: Install MySQL Connector/J
+  apt:
+    deb: /home/ubuntu/mysql-connector-j_8.4.0-1ubuntu24.04_all.deb
+  become: yes
+
+- name: Extract MySQL Connector/J .deb package to home directory
+  shell: dpkg -x /home/ubuntu/mysql-connector-j_8.4.0-1ubuntu24.04_all.deb /home/ubuntu/jdbc
+  become: yes
+
+- name: Install JDBC Connector in kafka-connect containers
+  shell: |
+    docker exec kafka-connect1 /bin/confluent-hub install confluentinc/kafka-connect-jdbc:10.8.0 --no-prompt
+  become: yes
+
+- name: Install JDBC Connector in kafka-connect containers
+  shell: |
+    docker exec kafka-connect2 /bin/confluent-hub install confluentinc/kafka-connect-jdbc:10.8.0 --no-prompt
+  become: yes
+
+# 컨테이너로 jdbc 드라이버 전송
+- name: Copy JDBC driver to kafka-connect1 container
+  shell: docker cp /home/ubuntu/jdbc/usr/share/java/mysql-connector-j-8.4.0.jar kafka-connect1:/usr/share/confluent-hub-components/confluentinc-kafka-connect-jdbc/lib/
+  become: yes
+
+- name: Copy JDBC driver to kafka-connect2 container
+  shell: docker cp /home/ubuntu/jdbc/usr/share/java/mysql-connector-j-8.4.0.jar kafka-connect2:/usr/share/confluent-hub-components/confluentinc-kafka-connect-jdbc/lib/
+  become: yes
+
+# Connect Worker 재기동 
+- name: Restart kafka-connect1 container
+  shell: docker restart kafka-connect1
+  become: yes
+
+- name: Restart kafka-connect2 container
+  shell: docker restart kafka-connect2
+  become: yes
+
+# 커넥트 워커 1로 json,sh 파일 복사
+- name: Copy jdbc-mysql-source.json into container
+  shell: docker cp /home/ubuntu/jdbc-mysql-source.json kafka-connect1:/home/appuser/jdbc
+  become: yes
+
+- name: Copy create-connector.sh into container
+  shell: docker cp /home/ubuntu/create-connector.sh kafka-connect1:/home/appuser/jdbc
+  become: yes
+
+- name: Copy jdbc-postgre-sink.json into container
+  shell: docker cp /home/ubuntu/jdbc-postgre-sink.json kafka-connect1:/home/appuser/jdbc
+  become: yes
+
+# 커넥트 워커 2 json,sh 파일 복사
+- name: Copy jdbc-mysql-source.json into container
+  shell: docker cp /home/ubuntu/jdbc-mysql-source.json kafka-connect2:/home/appuser/jdbc
+  become: yes
+
+- name: Copy create-connector.sh into container
+  shell: docker cp /home/ubuntu/create-connector.sh kafka-connect2:/home/appuser/jdbc
+  become: yes
+
+- name: Copy jdbc-postgre-sink.json into container
+  shell: docker cp /home/ubuntu/jdbc-postgre-sink.json kafka-connect2:/home/appuser/jdbc
+  become: yes
+
+

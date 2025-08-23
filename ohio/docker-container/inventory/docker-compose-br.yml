@@ -1,0 +1,75 @@
+networks:
+  kafka-network:
+    driver: bridge
+
+services:
+  broker1:
+    container_name: broker1
+    image: confluentinc/cp-server:7.7.1
+
+    networks:
+      - kafka-network
+    ports:
+      - 29092:29092
+    volumes:
+      - ../volume/broker:/home/appuser
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-140-106-101.us-east-2.compute.amazonaws.com:29092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '101@controller1:9093,102@controller2:9094,103@controller3:9095'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_LOG4J_LOGGERS: kafka=WARN,kafka.controller=WARN,kafka.log.LogCleaner=WARN,state.change.logger=WARN,kafka.producer.async.DefaultEventHandler=WARN
+
+
+
+  broker2:
+    container_name: broker2
+    image: confluentinc/cp-server:7.7.1
+    networks:
+      - kafka-network
+    ports:
+      - 39092:39092
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:39092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-140-106-101.us-east-2.compute.amazonaws.com:39092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '101@controller1:9093,102@controller2:9094,103@controller3:9095'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_LOG4J_LOGGERS: kafka=WARN,kafka.controller=WARN,kafka.log.LogCleaner=WARN,state.change.logger=WARN,kafka.producer.async.DefaultEventHandler=WARN
+
+
+
+  broker3:
+    container_name: broker3
+    image: confluentinc/cp-server:7.7.1
+    networks:
+      - kafka-network
+    ports:
+      - 49092:49092
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_PROCESS_ROLES: 'broker'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:49092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-140-106-101.us-east-2.compute.amazonaws.com:49092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '101@controller1:9093,102@controller2:9094,103@controller3:9095'
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_LOG4J_LOGGERS: kafka=WARN,kafka.controller=WARN,kafka.log.LogCleaner=WARN,state.change.logger=WARN,kafka.producer.async.DefaultEventHandler=WARN
+

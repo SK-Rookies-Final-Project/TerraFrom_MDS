@@ -1,0 +1,26 @@
+listeners=http://0.0.0.0:8081
+host.name=cp1_sr1_a_public_ip
+kafkastore.topic=_schemas
+kafkastore.topic.replication.factor=3
+debug=false
+schema.compatibility.level=full
+schema.registry.group.id=schema-cluster-1
+
+kafkastore.bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+kafkastore.security.protocol=SASL_PLAINTEXT
+kafkastore.sasl.mechanism=OAUTHBEARER
+kafkastore.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
+kafkastore.sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="admin" password="admin-secret" metadataServerUrls="http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090";
+
+resource.extension.class=io.confluent.kafka.schemaregistry.security.SchemaRegistrySecurityResourceExtension
+confluent.schema.registry.auth.mechanism=JETTY_AUTH
+confluent.schema.registry.authorizer.class=io.confluent.kafka.schemaregistry.security.authorizer.rbac.RbacAuthorizer
+rest.servlet.initializor.classes=io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
+
+confluent.metadata.bootstrap.server.urls=http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090
+
+confluent.metadata.http.auth.credentials.provider=BASIC
+confluent.metadata.basic.auth.credentials.source=USER_INFO
+confluent.metadata.basic.auth.user.info=admin:admin-secret
+
+public.key.path=/var/ssl/private/public.pem

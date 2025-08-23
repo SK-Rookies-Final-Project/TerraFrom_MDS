@@ -1,0 +1,82 @@
+networks:
+  kafka-network:
+    driver: bridge
+
+services:
+  kafka-connect1:
+    image: confluentinc/cp-kafka-connect:7.7.1
+    container_name: kafka-connect1
+    networks:
+      - kafka-network
+    ports:
+      - "18083:8083"
+    volumes:
+      - ../scripts/connect-worker:/home/appuser
+
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect1
+      CONNECT_REST_ADVERTISED_LISTENER: 'http'
+      CONNECT_REST_ADVERTISED_PORT: 8083
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: connect-cluster
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-cluster-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-cluster-offsets
+      CONNECT_OFFSET_STORAGE_PARTITIONS: 25
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_STATUS_STORAGE_TOPIC: connect-cluster-status
+      CONNECT_STATUS_STORAGE_PARTITIONS: 5
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_CONFLUENT_LICENSE_TOPIC: '_confluent-command'
+      CONNECT_MONITORING_INTERCEPTOR_TOPIC: '_confluent-monitoring'
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry1:8081,http://schema-registry2:8082
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry1:8081,http://schema-registry2:8082
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-7.7.1.jar
+      CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+
+
+  kafka-connect2:
+    image: confluentinc/cp-kafka-connect:7.7.1
+    container_name: kafka-connect2
+    networks:
+      - kafka-network
+    ports:
+      - "18084:8083"
+    volumes:
+      - ../scripts/connect-worker:/home/appuser
+
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'broker1:29092,broker2:39092,broker3:49092'
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect2
+      CONNECT_REST_ADVERTISED_LISTENER: 'http'
+      CONNECT_REST_ADVERTISED_PORT: 8083
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: connect-cluster
+      CONNECT_CONFIG_STORAGE_TOPIC: connect-cluster-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
+      CONNECT_OFFSET_STORAGE_TOPIC: connect-cluster-offsets
+      CONNECT_OFFSET_STORAGE_PARTITIONS: 25
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_STATUS_STORAGE_TOPIC: connect-cluster-status
+      CONNECT_STATUS_STORAGE_PARTITIONS: 5
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+      CONNECT_CONFLUENT_LICENSE_TOPIC: '_confluent-command'
+      CONNECT_MONITORING_INTERCEPTOR_TOPIC: '_confluent-monitoring'
+      CONNECT_KEY_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry1:8081,http://schema-registry2:8082
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry1:8081,http://schema-registry2:8082
+      CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-7.7.1.jar
+      CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
+      CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
+    
