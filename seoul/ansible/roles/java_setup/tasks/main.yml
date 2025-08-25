@@ -65,6 +65,15 @@
     dest: /usr/bin/javac
     state: link
     force: yes
+    
+# Kafka Connect 환경변수 설정
+- name: Ensure CONFLUENT_HOME is present in ~/.bashrc
+  become: true
+  ansible.builtin.lineinfile:
+    path: ~/.bashrc
+    line: 'export CONFLUENT_HOME="/engn/confluent"'
+    state: present
+    create: yes
 
 
 # 기본 디렉토리 생성

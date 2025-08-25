@@ -20,8 +20,7 @@
 - name: Deploy schema-registry.properties.j2 to instance
   template:
     # 템플릿 소스(templates/ source 파일인 schema-registry.properties.j2)
-    src: schema-registry.properties.j2
-    # 실제 저장 경로 (확장자 .j2 제거됨)
+    src: schema-registry.properties{{ groups['schema_registries'].index(inventory_hostname) + 1 }}.j2
     dest: /engn/confluent/properties/schema-registry.properties
     owner: ubuntu                     # 소유자: ubuntu
     group: ubuntu                     # 그룹: ubuntu
@@ -32,7 +31,6 @@
   template:
     # 템플릿 소스(templates/ source 파일인 schema-registry-log4j.properties.j2)
     src: schema-registry-log4j.properties.j2
-    # 실제 저장 경로 (확장자 .j2 제거됨)
     dest: /engn/confluent/properties/schema-registry-log4j.properties
     owner: ubuntu                     # 소유자: ubuntu
     group: ubuntu                     # 그룹: ubuntu
@@ -59,7 +57,7 @@
 # ubuntu 그룹의 ubuntu 소유자로 rwx r-x r-x 권한으로 스크립트 파읿 배포
 - name: Deploy start-schema-registry.sh.j2 to instance
   template:
-    src: start-schema-registry.sh.j2
+    src: start-schema-registry{{ groups['schema_registries'].index(inventory_hostname) + 1 }}.sh.j2
     dest: /engn/confluent/scripts/start-schema-registry.sh
     owner: ubuntu
     group: ubuntu

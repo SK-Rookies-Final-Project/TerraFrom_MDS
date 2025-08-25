@@ -27,7 +27,9 @@ declare -a connect_workers
 declare -a control_centers
 declare -a others
 
-# 인스턴스 정보를 이름 기반으로 분류
+# 인스턴스 정보를 이름 기준으로 정렬한 후 분류
+sorted_instances=$(echo "$instances_info" | sort -k1,1)
+
 while IFS=$'\t' read -r name ip; do
     # None이나 빈 값 처리
     if [ "$name" = "None" ] || [ -z "$name" ]; then
@@ -56,7 +58,7 @@ while IFS=$'\t' read -r name ip; do
     else
         others+=("$entry")
     fi
-done <<< "$instances_info"
+done <<< "$sorted_instances"
 
 echo "분류 결과:"
 echo "  Brokers: ${#brokers[@]}"
@@ -65,6 +67,38 @@ echo "  Schema Registries: ${#schema_registries[@]}"
 echo "  Connect Workers: ${#connect_workers[@]}"
 echo "  Control Centers: ${#control_centers[@]}"
 echo "  Others: ${#others[@]}"
+
+# 각 그룹 내에서도 이름으로 정렬하는 함수
+sort_group() {
+    local -n arr=$1
+    local temp_file=$(mktemp)
+    printf '%s\n' "${arr[@]}" | sort > "$temp_file"
+    arr=()
+    while IFS= read -r line; do
+        arr+=("$line")
+    done < "$temp_file"
+    rm "$temp_file"
+}
+
+# 각 그룹 내에서 정렬
+if [ ${#brokers[@]} -gt 0 ]; then
+    sort_group brokers
+fi
+if [ ${#controllers[@]} -gt 0 ]; then
+    sort_group controllers
+fi
+if [ ${#schema_registries[@]} -gt 0 ]; then
+    sort_group schema_registries
+fi
+if [ ${#connect_workers[@]} -gt 0 ]; then
+    sort_group connect_workers
+fi
+if [ ${#control_centers[@]} -gt 0 ]; then
+    sort_group control_centers
+fi
+if [ ${#others[@]} -gt 0 ]; then
+    sort_group others
+fi
 
 # inventory.ini 파일 생성 시작
 cat > $INVENTORY_FILE << 'EOL'

@@ -3,6 +3,7 @@
 
 # 키
 test-key.pem
+common/ssl/*
 
 # ansible-inventory
 ansible-ubuntu/inventory.ini
@@ -21,7 +22,6 @@ seoul/ansible/host_vars/*
 # SSH keys or credentials
 seoul/ansible/*.pem
 seoul/ansible/*.key
-
 
 # Logs and temporary files
 seoul/ansible/*.log

@@ -39,8 +39,8 @@
 # Confluent Control Center 실행 스크립트 템플릿 배포
 - name: Deploy start-control-center.sh.j2 to instance
   template:
-    src: start-control-center.sh.j2
-    dest: /engn/confluent/scripts/start-control-center.sh
+    src: start-c3.sh.j2
+    dest: /engn/confluent/scripts/start-c3.sh
     owner: ubuntu
     group: ubuntu
     mode: "0755"
@@ -48,13 +48,8 @@
 # Confluent Control Center 종료 스크립트 템플릿 배포
 - name: Deploy stop-control-center.sh.j2 to instance
   template:
-    src: stop-control-center.sh.j2
-    dest: /engn/confluent/scripts/stop-control-center.sh
+    src: stop-c3.sh.j2
+    dest: /engn/confluent/scripts/stop-c3.sh
     owner: ubuntu
     group: ubuntu
     mode: "0755"
-
-# start-control-center.sh 스크립트 실행
-- name: run start-control-center.sh
-  command: /engn/confluent/scripts/start-control-center.sh
-  become: yes

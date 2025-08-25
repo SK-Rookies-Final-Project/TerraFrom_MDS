@@ -1,109 +1,111 @@
-- name: Install Java on all nodes
-  hosts: all
-  become: true
-  roles:
-    - java_setup
+# - name: Install Java on all nodes
+#   hosts: all
+#   become: true
+#   roles:
+#     - java_setup
 
-- name: Generate Kafka Cluster UUID
-  hosts: brokers[0]
-  become: true
-  tasks:
-    - name: Generate Kafka Cluster UUID
-      command: >
-        bash -c 'source /etc/profile.d/java.sh && /engn/confluent/bin/kafka-storage random-uuid'
-      register: uuid_result
-      changed_when: false
-      run_once: true
+# - name: Generate Kafka Cluster UUID
+#   hosts: brokers[0]
+#   become: true
+#   tasks:
+#     - name: Generate Kafka Cluster UUID
+#       command: >
+#         bash -c 'source /etc/profile.d/java.sh && /engn/confluent/bin/kafka-storage random-uuid'
+#       register: uuid_result
+#       changed_when: false
+#       run_once: true
 
-    - name: Set cluster_uuid to all nodes
-      add_host:
-        name: "{{ item }}"
-        groups: all
-        cluster_uuid: "{{ uuid_result.stdout }}"
-      loop: "{{ groups['all'] }}"
+#     - name: Set cluster_uuid to all nodes
+#       add_host:
+#         name: "{{ item }}"
+#         groups: all
+#         cluster_uuid: "{{ uuid_result.stdout }}"
+#       loop: "{{ groups['all'] }}"
 
-# 권한 설정 추가
-- name: Setup Kafka Data Directories
-  hosts: all
-  become: true
-  tasks:
-    - name: Create Kafka data directories
-      file:
-        path: "{{ item }}"
-        state: directory
-        owner: ubuntu
-        group: ubuntu
-        mode: '0755'
-        recurse: yes
-      loop:
-        - /data/broker
-        - /data/controller
-        - /engn/confluent/logs
+# # 권한 설정 추가
+# - name: Setup Kafka Data Directories
+#   hosts: all
+#   become: true
+#   tasks:
+#     - name: Create Kafka data directories
+#       file:
+#         path: "{{ item }}"
+#         state: directory
+#         owner: ubuntu
+#         group: ubuntu
+#         mode: '0755'
+#         recurse: yes
+#       loop:
+#         - /appData/data/kafka-controller
+#         - /appData/data/kafka
+#         - /engn/confluent/logs
+#         - /var/ssl/private
+#         - /appData/logs
 
-- name: Generate pem Key
-  hosts: brokers[0]
-  become: true
-  tasks:
-    - name: Create 
-      path: /engn/confluent/ssl
-      state: directory
-      owner: ubuntu
-      group: ubuntu
-      mode: '0755'     
 
-    - name: Create Pem Key
-      community.crypto.openssl_privatekey:
-        path: /engn/confluent/ssl/tokenKeypair.pem
-        size: 2048
-        type: RSA
-        mode: '0600' 
+# # 공개 키 복사
+# - name: Distribute public.pem to all Confluent components
+#   hosts: all
+#   become: true
+#   tasks:
+#     - name: Copy public.pem to target servers
+#       copy:
+#         src: ../../common/ssl/public.pem
+#         dest: /var/ssl/private/public.pem
+#         owner: root
+#         group: root
+#         mode: '0644'
 
-    - name: Extract RSA public key from tokenKeypair.pem
-      command: >
-        openssl rsa
-        -in /engn/confluent/ssl/tokenKeypair.pem
-        -outform PEM
-        -pubout
-        -out /engn/confluent/ssl/public.pem
-      args:
-        creates: "/engn/confluent/ssl/public.pem"
+# # 프라이빗 키 복사
+# - name: Distribute tokenKeypair.pem to all Confluent components
+#   hosts: brokers, controllers
+#   become: true
+#   tasks:
+#     - name: Copy tokenKeypair.pem to target servers
+#       copy:
+#         src: ../../common/ssl/tokenKeypair.pem
+#         dest: /var/ssl/private/tokenKeypair.pem
+#         owner: root
+#         group: root
+#         mode: '0644'
 
-- name: Setup Kafka Controllers
-  hosts: controllers
-  become: true
-  roles:
-    - controllers
 
-- name: Setup Kafka Brokers
-  hosts: brokers
-  become: true
-  roles:
-    - brokers
+# - name: Setup Kafka Controllers
+#   hosts: controllers
+#   become: true
+#   roles:
+#     - controllers
 
-- name: Setup CP1_Connect_Workers
-  hosts: connect_workers
-  become: true
-  roles:
-    - connect_workers
-    - rds_setup
+# - name: Setup Kafka Brokers
+#   hosts: brokers
+#   become: true
+#   roles:
+#     - brokers
 
-- name: Setup CP1_Schema-Registries
-  hosts: schema_registries
-  become: true
-  roles:
-    - schema_registries
+# - name: Setup CP1_Connect_Workers
+#   hosts: connect_workers
+#   become: true
+#   roles:
+#     - connect_workers
+#     - rds_setup
 
-- name: Setup CP1_C3
-  hosts: control_center
-  become: true
-  roles: 
-    - controller_center
+# - name: Setup CP1_Schema-Registries
+#   hosts: schema_registries
+#   become: true
+#   roles:
+#     - schema_registries
 
-- name: Install Java on all nodes
-  hosts: all
-  become: true
-  roles:
-    - jmx_setup
+# - name: Setup CP1_C3
+#   hosts: control_center
+#   become: true
+#   roles: 
+#     - controller_center
+
+# - name: Install Java on all nodes
+#   hosts: all
+#   become: true
+#   roles:
+#     - jmx_setup
 
 - name: Start Kafka Controllers
   hosts: controllers
@@ -122,7 +124,7 @@
   become_user: ubuntu  # ubuntu 사용자로 실행
   tasks:
     - name: Execute broker start script in background
-      shell: nohup /engn/confluent/scripts/start-broker.sh > /dev/null 2>&1 &
+      shell: nohup /engn/confluent/scripts/start-kafka.sh > /dev/null 2>&1 &
       args:
         executable: /bin/bash  # bash 쉘로 실행
       register: result         # 실행 결과를 변수에 저장
@@ -155,7 +157,7 @@
   become_user: ubuntu  # ubuntu 사용자로 실행
   tasks:
     - name: Execute control_center start script in background
-      shell: nohup /engn/confluent/scripts/start-control-center.sh > /dev/null 2>&1 &
+      shell: nohup /engn/confluent/scripts/start-c3.sh > /dev/null 2>&1 &
       args:
         executable: /bin/bash  # bash 쉘로 실행
       register: result         # 실행 결과를 변수에 저장

@@ -1,0 +1,77 @@
+#!/bin/bash
+
+CONFLUENT_HOME="/engn/confluent"
+SERVER_NAME="sr2"
+
+PROPERTIES_FILE="${CONFLUENT_HOME}/properties/schema-registry.properties"
+LOG_DIR="/logs/schema-registry"
+export LOG_DIR
+
+### java home
+export JAVA_HOME="/home/ubuntu/jdk-17.0.8+7"
+
+######################################################################
+
+### memory options
+SCHEMA_REGISTRY_HEAP_OPTS="${SCHEMA_REGISTRY_HEAP_OPTS} -Xms1G -Xmx1G"
+export SCHEMA_REGISTRY_HEAP_OPTS
+
+### performance
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -server"
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -XX:+UseG1GC"
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -XX:MaxGCPauseMillis=20"
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -XX:InitiatingHeapOccupancyPercent=35"
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -XX:+ExplicitGCInvokesConcurrent"
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -XX:MaxInlineLevel=15"
+SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS="${SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS} -Djava.awt.headless=true"
+export SCHEMA_REGISTRY_JVM_PERFORMANCE_OPTS
+
+### generic jvm settings
+SCHEMA_REGISTRY_OPTS="${SCHEMA_REGISTRY_OPTS} -D${SERVER_NAME}"
+#SCHEMA_REGISTRY_OPTS="${SCHEMA_REGISTRY_OPTS} -D${SERVER_NAME} -javaagent:${CONFLUENT_HOME}/jmx-exporter/jmx_prometheus_javaagent-0.20.0.jar=2345:${CONFLUENT_HOME}/jmx-exporter/confluent_schemaregistry.yml"
+export SCHEMA_REGISTRY_OPTS
+
+### gc option
+export GC_LOG_ENABLED="true"
+
+### jmx
+#export JMX_PORT="1234"
+SCHEMA_REGISTRY_JMX_OPTS="${SCHEMA_REGISTRY_JMX_OPTS} -Dcom.sun.management.jmxremote"
+SCHEMA_REGISTRY_JMX_OPTS="${SCHEMA_REGISTRY_JMX_OPTS} -Dcom.sun.management.jmxremote.authenticate=false"
+SCHEMA_REGISTRY_JMX_OPTS="${SCHEMA_REGISTRY_JMX_OPTS} -Dcom.sun.management.jmxremote.ssl=false "
+#SCHEMA_REGISTRY_JMX_OPTS="${KAFKA_JMX_OPTS} -Djava.rmi.server.hostname=192.168.56.104"
+export SCHEMA_REGISTRY_JMX_OPTS
+
+### log4j
+SCHEMA_REGISTRY_LOG4J_OPTS="${SCHEMA_REGISTRY_LOG4J_OPTS}  -Dlog4j.configuration=file:${CONFLUENT_HOME}/properties/schema-registry-log4j.properties"
+export SCHEMA_REGISTRY_LOG4J_OPTS
+
+######################################################################
+
+### check current user
+#CURRENT_USER="$(id -un)"
+#if [ "${CURRENT_USER}" == "root" ]; then
+#    echo "[ERROR] The current user is root!"
+#    exit
+#fi
+
+### check running process
+PID="$(pgrep -xa java | grep ${PROPERTIES_FILE} | grep ${SERVER_NAME} | awk '{print $1}')"
+if [ -n "${PID}" ]; then
+    echo "[ERROR] The ${SERVER_NAME} (pid ${PID}) is already running!"
+    exit
+fi
+
+### create log dir
+if [ ! -d "${LOG_DIR}/backup" ]; then
+    mkdir -p ${LOG_DIR}/backup
+fi
+
+### backup stdout log
+GET_DATE="$(date +'%Y%m%d_%H%M%S')"
+if [ -f "${LOG_DIR}/nohup.${SERVER_NAME}.out" ]; then
+    mv ${LOG_DIR}/nohup.${SERVER_NAME}.out ${LOG_DIR}/backup/nohup.${SERVER_NAME}.${GET_DATE}.out
+fi
+
+touch ${LOG_DIR}/nohup.${SERVER_NAME}.out
+nohup ${CONFLUENT_HOME}/bin/schema-registry-start ${PROPERTIES_FILE} > ${LOG_DIR}/nohup.${SERVER_NAME}.out 2>&1 &

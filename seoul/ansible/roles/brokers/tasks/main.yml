@@ -8,7 +8,7 @@
     mode: '0755'
     recurse: yes
 
-- name: Create directory for Scripts
+# - name: Create directory for Scripts
   file:
     path: /engn/confluent/scripts
     state: directory
@@ -20,42 +20,41 @@
 # broker의 메인 설정 파일 배포
 - name: Deploy server.properties.j2 to instance
   template:
-    src: server.properties.j2
+    src: "server.properties{{ groups['brokers'].index(inventory_hostname) + 1 }}.j2"
     dest: /engn/confluent/properties/server.properties
     owner: ubuntu
     group: ubuntu
     mode: '0644'
-
+    
 # broker의 로그 설정 파일 배포
-- name: Deploy server-log4j.properties.j2 to instance
+- name: Deploy kafka-log4j.properties.j2 to instance
   template:
-    src: server-log4j.properties.j2
-    dest: /engn/confluent/properties/server-log4j.properties
+    src: kafka-log4j.properties.j2
+    dest: /engn/confluent/properties/kafka-log4j.properties
     owner: ubuntu
     group: ubuntu
     mode: '0644'
 
 - name: Check if Kafka already formatted
   stat:
-    path: /data/broker/meta.properties
+    path: /appData/data/kafka/meta.properties
   register: meta_exists
 
 - name: Format Broker data directory with UUID (only if not already formatted)
   shell: |
     source /etc/profile.d/java.sh && \
     /engn/confluent/bin/kafka-storage format \
-    —cluster-id {{ cluster_uuid }} \
-    —config /engn/confluent/properties/broker.properties
+    --cluster-id {{ cluster_uuid }} \
+    --config /engn/confluent/properties/server.properties
   args:
     chdir: /engn/confluent/bin
     executable: /bin/bash
   when: cluster_uuid is defined and not meta_exists.stat.exists
   become: true
 
-
 - name: Start-Kafka
   template:
-    src: start-kafka.sh.j2
+    src: start-kafka{{ groups['brokers'].index(inventory_hostname) + 1 }}.sh.j2
     dest: /engn/confluent/scripts/start-kafka.sh
     mode: '0755'
 

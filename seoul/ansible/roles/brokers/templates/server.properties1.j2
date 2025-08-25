@@ -2,7 +2,7 @@ broker.id=83
 process.roles=broker
 
 inter.broker.listener.name=BROKER
-advertised.listeners=INTERNAL://{{docker_compose_public_ip}}:29092,BROKER://{{docker_compose_public_ip}}:39092,CLIENT://{{docker_compose_public_ip}}:49092
+advertised.listeners=INTERNAL://{{cp1_broker1_a_public_ip}}:9090,BROKER://{{cp1_broker1_a_public_ip}}:9091,CLIENT://{{cp1_broker1_a_public_ip}}:9092
 listeners=INTERNAL://:9090,BROKER://:9091,CLIENT://:9092
 listener.security.protocol.map=CONTROLLER:PLAINTEXT,INTERNAL:SASL_PLAINTEXT,BROKER:SASL_PLAINTEXT,CLIENT:SASL_PLAINTEXT
 
@@ -10,7 +10,7 @@ controller.listener.names=CONTROLLER
 controller.quorum.voters=101@{{cp1_controller1_a_private_ip}}:9093,102@{{cp1_controller2_a_private_ip}}:9093,103@{{cp1_controller3_a_private_ip}}:9093
 
 metric.reporters=io.confluent.metrics.reporter.ConfluentMetricsReporter
-confluent.metrics.reporter.bootstrap.servers={{docker_compose_public_ip}}:29092,{{docker_compose_public_ip}}:39092,{{docker_compose_public_ip}}:49092
+confluent.metrics.reporter.bootstrap.servers={{cp1_broker1_a_public_ip}}:9092,{{cp1_broker2_a_public_ip}}:9092,{{cp1_broker3_a_public_ip}}:9092
 confluent.metrics.reporter.security.protocol=SASL_PLAINTEXT
 confluent.metrics.reporter.sasl.mechanism=SCRAM-SHA-512
 confluent.metrics.reporter.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
@@ -91,17 +91,17 @@ confluent.metadata.server.user.store.file.path=/var/ssl/private/mdsuser.txt
 confluent.metadata.topic.replication.factor=3
 confluent.metadata.enable.server.urls.refresh=false
 
-confluent.security.event.logger.destination.admin.bootstrap.servers={{cp1_broker1_a_public_ip}}:9092,{{cp1_broker2_a_public_ip}}:9092,{{cp1_broker3_a_public_ip}}:9092
-confluent.security.event.logger.destination.admin.security.protocol=SASL_PLAINTEXT
-confluent.security.event.logger.destination.admin.sasl.mechanism=SCRAM-SHA-512
-confluent.security.event.logger.destination.admin.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
+confluent.security.event.logger.destination.admin.bootstrap.servers={{docker_compose_public_ip}}:29092,{{docker_compose_public_ip}}:39092,{{docker_compose_public_ip}}:49092
+confluent.security.event.logger.destination.admin.security.protocol=PLAINTEXT
+# confluent.security.event.logger.destination.admin.sasl.mechanism=SCRAM-SHA-512
+# confluent.security.event.logger.destination.admin.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
 
 confluent.security.event.logger.enable=true
 confluent.security.event.logger.exporter.kafka.topic.create=false
-confluent.security.event.logger.exporter.kafka.bootstrap.servers={{cp1_broker1_a_public_ip}}:9092,{{cp1_broker2_a_public_ip}}:9092,{{cp1_broker3_a_public_ip}}:9092
-confluent.security.event.logger.exporter.kafka.security.protocol=SASL_PLAINTEXT
-confluent.security.event.logger.exporter.kafka.sasl.mechanism=SCRAM-SHA-512
-confluent.security.event.logger.exporter.kafka.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
+confluent.security.event.logger.exporter.kafka.bootstrap.servers={{docker_compose_public_ip}}:29092,{{docker_compose_public_ip}}:39092,{{docker_compose_public_ip}}:49092
+confluent.security.event.logger.destination.admin.security.protocol=PLAINTEXT
+# confluent.security.event.logger.destination.admin.sasl.mechanism=SCRAM-SHA-512
+# confluent.security.event.logger.destination.admin.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
 
 # metric.reporters=io.confluent.telemetry.reporter.TelemetryReporter
 # confluent.telemetry.exporter._c3.type=http

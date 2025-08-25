@@ -11,7 +11,7 @@
 # Kafka Connect 시작 스크립트 복사
 - name: Copy Kafka Connect Start Script
   template:
-    src: start-connect.sh.j2
+    src: start-connect{{ groups['connect_workers'].index(inventory_hostname) + 1 }}.sh.j2
     dest: /engn/confluent/scripts/start-connect.sh
     owner: ubuntu
     group: ubuntu
@@ -20,31 +20,28 @@
 
 # Kafka Connect 종료 스크립트 복사
 - name: Copy Kafka Connect Stop Script
-  copy:
-    src: stop-connect.sh
+  template:
+    src: stop-connect.sh.j2
     dest: /engn/confluent/scripts/stop-connect.sh
     owner: ubuntu
     group: ubuntu
     mode: '0755'
   become: true
-  
 
-# Kafka Connect 환경변수 설정
-- name: Ensure CONFLUENT_HOME is present in ~/.bashrc
-  become: true
-  ansible.builtin.lineinfile:
-    path: ~/.bashrc
-    line: 'export CONFLUENT_HOME="/engn/confluent"'
-    state: present
-    create: yes
+# mdsuser.txt 복사
+- name: Deploy mdsuser.txt to instance
+  template:
+    src: mdsuser.txt.j2
+    dest: /var/ssl/private/mdsuser.txt
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
 
 - name: Source .bashrc for immediate use (only affects non-login shell)
   shell: source ~/.bashrc
   args:
     executable: /bin/bash
   ignore_errors: yes  # 셸 프로세스에서 source는 별로 의미가 없어서 무시 처리
-
-
 
 # Kafka Connect 환경변수 설정
 - name: Ensure PROPERTIES_FILE is present in ~/.bashrc
@@ -75,7 +72,7 @@
 # Kafka Connect 설정 파일 배포
 - name: Deploy connect-avro-distributed.properties to instance
   template:
-    src: connect-avro-distributed.properties.j2
+    src: connect-avro-distributed.properties{{ groups['connect_workers'].index(inventory_hostname) + 1 }}.j2
     dest: /engn/confluent/properties/connect-avro-distributed.properties
     owner: ubuntu
     group: ubuntu
@@ -83,8 +80,8 @@
 
 # Kafka Connect 로그 설정 파일 템플릿 배포
 - name: Deploy connect-worker-log4j.properties to instance
-  copy:
-    src: connect-worker-log4j.properties
+  template:
+    src: connect-worker-log4j.properties.j2
     dest: /engn/confluent/properties/connect-worker-log4j.properties
     owner: ubuntu
     group: ubuntu

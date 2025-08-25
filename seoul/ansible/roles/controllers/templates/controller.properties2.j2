@@ -1,4 +1,4 @@
-node.id=101
+node.id=102
 process.roles=controller
 controller.listener.names=CONTROLLER
 controller.quorum.voters=101@{{cp1_controller1_a_private_ip}}:9093,102@{{cp1_controller2_a_private_ip}}:9093,103@{{cp1_controller3_a_private_ip}}:9093
@@ -25,10 +25,10 @@ confluent.metrics.reporter.sasl.jaas.config=org.apache.kafka.common.security.scr
 
 confluent.security.event.logger.enable=true
 confluent.security.event.logger.exporter.kafka.topic.create=false
-confluent.security.event.logger.exporter.kafka.bootstrap.servers={{cp1_broker1_a_public_ip}}:9092,{{cp1_broker2_a_public_ip}}:9092,{{cp1_broker3_a_public_ip}}:9092
-confluent.security.event.logger.exporter.kafka.security.protocol=SASL_PLAINTEXT
-confluent.security.event.logger.exporter.kafka.sasl.mechanism=SCRAM-SHA-512
-confluent.security.event.logger.exporter.kafka.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
+confluent.security.event.logger.exporter.kafka.bootstrap.servers={{docker_compose_public_ip}}:29092,{{docker_compose_public_ip}}:39092,{{docker_compose_public_ip}}:49092
+confluent.security.event.logger.exporter.kafka.security.protocol=PLAINTEXT
+# confluent.security.event.logger.exporter.kafka.sasl.mechanism=SCRAM-SHA-512
+# confluent.security.event.logger.exporter.kafka.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
 
 log.cleanup.policy=delete
 log.dirs=/appData/data/kafka-controller
