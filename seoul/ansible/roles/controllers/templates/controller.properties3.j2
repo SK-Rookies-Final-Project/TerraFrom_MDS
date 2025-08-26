@@ -12,7 +12,7 @@ confluent.metadata.server.token.key.path=/var/ssl/private/tokenKeypair.pem
 confluent.authorizer.access.rule.providers=CONFLUENT
 super.users=User:admin;User:ANONYMOUS
 
-confluent.metadata.bootstrap.servers={{cp1_broker1_a_public_ip}}:9092,{{cp1_broker2_a_public_ip}}:9092,{{cp1_broker3_a_public_ip}}:9092
+confluent.metadata.bootstrap.servers=http:{{cp1_broker1_a_public_ip}}:9092,http:{{cp1_broker2_a_public_ip}}:9092,http:{{cp1_broker3_a_public_ip}}:9092
 confluent.metadata.security.protocol=SASL_PLAINTEXT
 confluent.metadata.sasl.mechanism=SCRAM-SHA-512
 confluent.metadata.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";

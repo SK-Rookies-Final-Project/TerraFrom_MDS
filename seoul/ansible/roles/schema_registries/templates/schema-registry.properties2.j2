@@ -17,7 +17,7 @@ confluent.schema.registry.auth.mechanism=JETTY_AUTH
 confluent.schema.registry.authorizer.class=io.confluent.kafka.schemaregistry.security.authorizer.rbac.RbacAuthorizer
 rest.servlet.initializor.classes=io.confluent.common.security.jetty.initializer.InstallBearerOrBasicSecurityHandler
 
-confluent.metadata.bootstrap.server.urls={{cp1_broker1_a_public_ip}}:8090,{{cp1_broker2_a_public_ip}}:8090,{{cp1_broker3_a_public_ip}}:8090
+confluent.metadata.bootstrap.server.urls=http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090
 
 confluent.metadata.http.auth.credentials.provider=BASIC
 confluent.metadata.basic.auth.credentials.source=USER_INFO

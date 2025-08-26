@@ -28,15 +28,6 @@
     mode: '0755'
   become: true
 
-# mdsuser.txt 복사
-- name: Deploy mdsuser.txt to instance
-  template:
-    src: mdsuser.txt.j2
-    dest: /var/ssl/private/mdsuser.txt
-    owner: ubuntu
-    group: ubuntu
-    mode: '0644'
-
 - name: Source .bashrc for immediate use (only affects non-login shell)
   shell: source ~/.bashrc
   args:

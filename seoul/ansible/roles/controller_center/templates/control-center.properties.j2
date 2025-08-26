@@ -23,7 +23,7 @@ confluent.controlcenter.rest.authentication.method=BEARER
 confluent.controlcenter.schema.registry.basic.auth.credentials.source=USER_INFO
 confluent.controlcenter.schema.registry.basic.auth.user.info=admin:admin-secret
 
-confluent.metadata.bootstrap.server.urls={{cp1_broker1_a_public_ip}}:8090,{{cp1_broker2_a_public_ip}}:8090,{{cp1_broker3_a_public_ip}}:8090
+confluent.metadata.bootstrap.server.urls=http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090
 confluent.metadata.basic.auth.user.info=admin:admin-secret
 
 public.key.path=/var/ssl/private/public.pem

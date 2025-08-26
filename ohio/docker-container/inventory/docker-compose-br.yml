@@ -17,7 +17,7 @@ services:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: 'broker'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:29092'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-140-106-101.us-east-2.compute.amazonaws.com:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-143-42-149.us-east-2.compute.amazonaws.com:29092'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '101@controller1:9093,102@controller2:9094,103@controller3:9095'
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
@@ -40,7 +40,7 @@ services:
       KAFKA_NODE_ID: 2
       KAFKA_PROCESS_ROLES: 'broker'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:39092'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-140-106-101.us-east-2.compute.amazonaws.com:39092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-143-42-149.us-east-2.compute.amazonaws.com:39092'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '101@controller1:9093,102@controller2:9094,103@controller3:9095'
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
@@ -63,7 +63,7 @@ services:
       KAFKA_NODE_ID: 3
       KAFKA_PROCESS_ROLES: 'broker'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:49092'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-140-106-101.us-east-2.compute.amazonaws.com:49092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://ec2-3-143-42-149.us-east-2.compute.amazonaws.com:49092'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_QUORUM_VOTERS: '101@controller1:9093,102@controller2:9094,103@controller3:9095'
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter

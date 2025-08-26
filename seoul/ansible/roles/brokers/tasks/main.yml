@@ -1,14 +1,14 @@
 # Kafka broker 설정 파일을 배포하기 위한 디렉토리 생성
 - name: Create directory for Kafka config files
   file:
-    path: /engn/confluent/properties/data
+    path: /engn/confluent/properties
     state: directory
     owner: ubuntu
     group: ubuntu
     mode: '0755'
     recurse: yes
 
-# - name: Create directory for Scripts
+- name: Create directory for Scripts
   file:
     path: /engn/confluent/scripts
     state: directory
@@ -45,7 +45,8 @@
     source /etc/profile.d/java.sh && \
     /engn/confluent/bin/kafka-storage format \
     --cluster-id {{ cluster_uuid }} \
-    --config /engn/confluent/properties/server.properties
+    --config /engn/confluent/properties/server.properties \
+    --add-scram 'SCRAM-SHA-512=[name=admin,password=admin-secret]'
   args:
     chdir: /engn/confluent/bin
     executable: /bin/bash
@@ -63,3 +64,11 @@
     src: stop-kafka.sh.j2
     dest: /engn/confluent/scripts/stop-kafka.sh
     mode: '0755'
+
+- name: Start Kafka Broker
+  shell: /engn/confluent/scripts/start-kafka.sh
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: ubuntu
+  register: broker_result

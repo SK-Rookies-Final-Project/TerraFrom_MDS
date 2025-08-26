@@ -27,11 +27,11 @@ wait_for_kafka_ready() {
 
 
 echo "✅ Step 1: Starting Kafka Controllers (controller1~3)..."
-docker compose -f inventory/docker-compose-kr.yml up -d
+docker compose -f ../inventory/docker-compose-kr.yml up -d
 sleep 10
 
 echo "✅ Step 2: Starting Kafka Brokers (broker1~3)..."
-docker compose -f inventory/docker-compose-br.yml up -d
+docker compose -f ../inventory/docker-compose-br.yml up -d
 
 # Wait for Kafka brokers to be ready
 wait_for_kafka localhost 29092
@@ -41,19 +41,19 @@ wait_for_kafka localhost 49092
 wait_for_kafka_ready
 
 echo "✅ Step 3: Starting Kafka Connect Workers (kafka-connect1, kafka-connect2)..."
-docker compose -f inventory/docker-compose-cw.yml up -d
+docker compose -f ../inventory/docker-compose-cw.yml up -d
 sleep 20
 
 echo "✅ Step 4: Starting Schema Registry (schema-registry1, schema-registry2)..."
-docker compose -f inventory/docker-compose-sr.yml up -d
+docker compose -f ../inventory/docker-compose-sr.yml up -d
 sleep 15
 
 echo "✅ Step 5: Starting ksqlDB (ksqldb, ksqldb-cli)..."
-docker compose -f inventory/docker-compose-db.yml up -d
+docker compose -f ../inventory/docker-compose-db.yml up -d
 sleep 10
 
 echo "✅ Step 6: Starting Control Center (control-center)..."
-docker compose -f inventory/docker-compose-c3.yml up -d
+docker compose -f ../inventory/docker-compose-c3.yml up -d
 sleep 5
 
 echo "🎉 All services started successfully!"

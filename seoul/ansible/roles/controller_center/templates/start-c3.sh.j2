@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONFLUENT_HOME="/engn/confluent-control-center-next-gen-2.2.0"
+CONFLUENT_HOME="/engn/confluent"
 SERVER_NAME="c3"
 PROPERTIES_FILE="${CONFLUENT_HOME}/properties/control-center.properties"
 
@@ -71,4 +71,4 @@ if [ ! -d "${LOG_DIR}" ]; then
 fi
 
 #nohup ${CONFLUENT_HOME}/bin/control-center-start ${PROPERTIES_FILE} 1>/dev/null 2>&1 &
-nohup ${CONFLUENT_HOME}/bin/control-center-start ${PROPERTIES_FILE} > ${LOG_DIR}/nohup.${SERVER_NAME}.out 2>&1 &
+nohup ${CONFLUENT_HOME}/bin/control-center-start ${PROPERTIES_FILE} > ${LOG_DIR}/control-center.out 2>&1 &

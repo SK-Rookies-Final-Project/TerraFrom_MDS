@@ -1,6 +1,6 @@
 - name: Create directory properties
   file:
-    path: /engn/confluent/properties/
+    path: /engn/confluent/properties
     state: directory
     owner: ubuntu
     group: ubuntu
@@ -34,7 +34,7 @@
     /engn/confluent/bin/kafka-storage format \
     -t {{ cluster_uuid }} \
     -c /engn/confluent/properties/controller.properties \
-    --add-scram 'SCRAM-SHA-256=[name=admin,password=admin-secret]'
+    --add-scram 'SCRAM-SHA-512=[name=admin,password=admin-secret]'
   args:
     chdir: /engn/confluent/bin
     executable: /bin/bash

@@ -101,21 +101,6 @@
         group: docker
         mode: '0664'
 
-    - name: 로컬 docker-container 디렉토리 존재 확인
-      local_action:
-        module: stat
-        path: "{{ local_docker_container_path }}"
-      register: local_docker_dir
-      run_once: true
-      become: no
-
-    - name: 로컬 docker-container 디렉토리가 없으면 오류 발생
-      fail:
-        msg: "로컬 docker-container 디렉토리를 찾을 수 없습니다: {{ local_docker_container_path }}"
-      when: not local_docker_dir.stat.exists
-      run_once: true
-      become: no
-
     - name: 원격 서버에 디렉토리 생성
       file:
         path: "{{ remote_docker_container_path }}"
@@ -155,128 +140,17 @@
         mode: '0755'
       ignore_errors: yes
 
-    # 경로 수정을 위한 새로운 태스크들 추가
-    - name: inventory 디렉토리 확인
-      stat:
-        path: "{{ remote_docker_container_path }}/inventory"
-      register: inventory_dir_check
-
-    - name: inventory 디렉토리 상태 출력
-      debug:
-        msg: "inventory 디렉토리 존재 여부: {{ inventory_dir_check.stat.exists }}"
-
-    - name: inventory 디렉토리 내 파일 목록 확인
-      shell: ls -la {{ remote_docker_container_path }}/inventory/
-      register: inventory_files
-      when: inventory_dir_check.stat.exists
-      ignore_errors: yes
-
-    - name: inventory 디렉토리 파일 목록 출력
-      debug:
-        var: inventory_files.stdout_lines
-      when: inventory_dir_check.stat.exists
-
-    - name: start-all.sh 스크립트 경로 수정
-      replace:
-        path: "{{ remote_docker_container_path }}/scripts/start-all.sh"
-        regexp: 'scripts/inventory/'
-        replace: 'inventory/'
-        backup: yes
-      when: inventory_dir_check.stat.exists
-
-    - name: 수정된 스크립트 내용 확인
-      shell: head -20 {{ remote_docker_container_path }}/scripts/start-all.sh
-      become_user: ubuntu
-      register: script_content_after_fix
-      
-    - name: 수정된 스크립트 내용 출력
-      debug:
-        var: script_content_after_fix.stdout_lines
-
-    # 개선된 Docker 실행 부분 - 실시간 로그 확인 및 타임아웃 설정
     - name: 기존 로그 파일 삭제 (새로운 실행을 위해)
       file:
         path: "{{ remote_docker_container_path }}/scripts/start-all.log"
         state: absent
 
-    - name: Docker 실행 (비동기 시작)
-      shell: nohup ./scripts/start-all.sh > scripts/start-all.log 2>&1 &
+    - name: start-all.sh 스크립트 실행
+      shell: |
+        cd {{ remote_docker_container_path }}/scripts
+        ./start-all.sh
+      become_user: ubuntu
+      register: start_script_output
       args:
-        chdir: "{{ remote_docker_container_path }}"
-      become_user: ubuntu
-      register: docker_start_async
-
-    - name: Docker 실행 진행 상황 모니터링 (초기 30초)
-      shell: tail -20 {{ remote_docker_container_path }}/scripts/start-all.log || echo "로그 파일이 아직 생성되지 않았습니다"
-      become_user: ubuntu
-      register: initial_log
-      retries: 6
-      delay: 5
-      
-    - name: 초기 Docker 시작 로그 출력
-      debug:
-        msg: "=== Docker 시작 진행 상황 ==="
-        
-    - name: 초기 로그 내용 출력
-      debug:
-        var: initial_log.stdout_lines
-
-    - name: Docker 컨테이너 상태 확인 (최대 10분 대기)
-      shell: |
-        echo "=== 현재 시각: $(date) ==="
-        echo "=== Docker 프로세스 상태 ==="
-        ps aux | grep docker | grep -v grep || echo "Docker 프로세스 없음"
-        echo ""
-        echo "=== 실행 중인 컨테이너 ==="
-        docker ps || echo "컨테이너 조회 실패"
-        echo ""
-        echo "=== 모든 컨테이너 (정지 포함) ==="
-        docker ps -a || echo "컨테이너 조회 실패"
-        echo ""
-        echo "=== start-all.sh 로그 마지막 20줄 ==="
-        tail -20 {{ remote_docker_container_path }}/scripts/start-all.log 2>/dev/null || echo "로그 파일 없음"
-      become_user: ubuntu
-      register: docker_status
-      retries: 60  # 10분 (60 * 10초)
-      delay: 10
-      until: >
-        docker_status.stdout is search("broker1.*Up") and
-        docker_status.stdout is search("broker2.*Up") and 
-        docker_status.stdout is search("broker3.*Up")
-      failed_when: false
-
-    - name: Docker 상태 상세 정보 출력
-      debug:
-        var: docker_status.stdout_lines
-
-    - name: 컨테이너 시작 완료 확인
-      shell: |
-        running_containers=$(docker ps --filter "status=running" --format "{{.Names}}" | grep -E "(broker|kafka-connect|schema-registry|control-center)" | wc -l)
-        echo "실행 중인 Kafka 관련 컨테이너 수: $running_containers"
-        if [ "$running_containers" -ge 3 ]; then
-          echo "SUCCESS: 주요 컨테이너들이 실행 중입니다"
-          exit 0
-        else
-          echo "WARNING: 일부 컨테이너가 아직 시작되지 않았습니다"
-          exit 1
-        fi
-      become_user: ubuntu
-      register: final_check
-      failed_when: false
-
-    - name: 최종 상태 출력
-      debug:
-        var: final_check.stdout_lines
-
-    - name: Docker 실행 결과 요약
-      debug:
-        msg: |
-          === Docker 컨테이너 시작 완료 ===
-          {% if final_check.rc == 0 %}
-          ✅ 성공적으로 컨테이너들이 시작되었습니다
-          {% else %}
-          ⚠️  일부 컨테이너가 아직 완전히 시작되지 않았을 수 있습니다
-          수동으로 'docker ps'를 확인해보세요
-          {% endif %}
-          
-          상세 로그 확인: {{ remote_docker_container_path }}/scripts/start-all.log
+        chdir: "{{ remote_docker_container_path }}/scripts"
+        executable: /bin/bash
