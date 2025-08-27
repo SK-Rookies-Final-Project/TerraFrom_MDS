@@ -31,9 +31,9 @@ producer.confluent.monitoring.interceptor.sasl.login.callback.handler.class=io.c
 producer.confluent.monitoring.interceptor.sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="admin" password="admin-secret" metadataServerUrls="http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090";
 
 key.converter=io.confluent.connect.avro.AvroConverter
-key.converter.schema.registry.url={{cp1_sr1_a_public_ip}}:8081,{{cp1_sr2_a_public_ip}}:8081
+key.converter.schema.registry.url=http://{{cp1_sr1_a_public_ip}}:8081,http://{{cp1_sr2_a_public_ip}}:8081
 value.converter=io.confluent.connect.avro.AvroConverter
-value.converter.schema.registry.url={{cp1_sr1_a_public_ip}}:8081,{{cp1_sr2_a_public_ip}}:8081
+value.converter.schema.registry.url=http://{{cp1_sr1_a_public_ip}}:8081,http://{{cp1_sr2_a_public_ip}}:8081
 
 plugin.path=/engn/confluent/share/java,/engn/confluent/share/confluent-hub-components,/engn/confluent/share/java/connect_plugins,/engn/confluent/share/custom-libs
 
@@ -46,8 +46,6 @@ consumer.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.au
 admin.security.protocol=SASL_PLAINTEXT
 admin.sasl.mechanism=OAUTHBEARER
 admin.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
-
-connector.client.config.override.policy=All
 
 security.protocol=SASL_PLAINTEXT
 sasl.mechanism=OAUTHBEARER

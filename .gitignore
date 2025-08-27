@@ -41,4 +41,4 @@ seoul/ansible/.DS_Store/
 # Java Application
 seoul/ansible/app/*
 
-# vars
+*/.DS_Store

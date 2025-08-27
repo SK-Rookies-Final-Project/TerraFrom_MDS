@@ -1,9 +1,17 @@
 confluent.controlcenter.id=1
 confluent.controlcenter.data.dir=/data/control-center
 confluent.controlcenter.rest.listeners=http://0.0.0.0:9021
-confluent.controlcenter.connect.connect-cluster1.cluster={{cp1_connect1_a_private_ip}}:8083,{{cp1_connect2_a_private_ip}}:8083
-confluent.controlcenter.schema.registry.url={{cp1_sr1_a_private_ip}}:8081,{{cp1_sr2_a_private_ip}}:8081
+confluent.controlcenter.connect.connect-cluster1.cluster=http://{{cp1_connect1_a_private_ip}}:8083,http://{{cp1_connect2_a_private_ip}}:8083
+confluent.controlcenter.schema.registry.url=http://{{cp1_sr1_a_private_ip}}:8081,http://{{cp1_sr2_a_private_ip}}:8081
 #confluent.controlcenter.ksql.ksql-cluster1.url=http://ksql-1:8088
+
+# ⭐ 핵심 수정: Kafka 클러스터 설정 추가 (누락된 부분)
+confluent.controlcenter.kafka.cluster-1.bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+confluent.controlcenter.kafka.cluster-1.security.protocol=SASL_PLAINTEXT
+confluent.controlcenter.kafka.cluster-1.sasl.mechanism=OAUTHBEARER
+confluent.controlcenter.kafka.cluster-1.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
+confluent.controlcenter.kafka.cluster-1.sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="admin" password="admin-secret" metadataServerUrls="http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090";
+
 confluent.controlcenter.internal.topics.partitions=12
 confluent.controlcenter.internal.topics.replication=3
 confluent.controlcenter.ui.autoupdate.enable=false
@@ -29,7 +37,7 @@ confluent.metadata.basic.auth.user.info=admin:admin-secret
 public.key.path=/var/ssl/private/public.pem
 
 confluent.controlcenter.prometheus.enable=true
-confluent.controlcenter.prometheus.url={{cp1_c3_a_private_ip}}:9090
+confluent.controlcenter.prometheus.url=http://{{cp1_c3_a_private_ip}}:9090
 confluent.controlcenter.prometheus.rules.file=/engn/confluent-control-center-next-gen-2.2.0/etc/confluent-control-center/trigger_rules-generated.yml
-confluent.controlcenter.alertmanager.url={{cp1_c3_a_private_ip}}:9093
+confluent.controlcenter.alertmanager.url=http://{{cp1_c3_a_private_ip}}:9093
 confluent.controlcenter.alertmanager.config.file=/engn/confluent-control-center-next-gen-2.2.0/etc/confluent-control-center/alertmanager-generated.yml
