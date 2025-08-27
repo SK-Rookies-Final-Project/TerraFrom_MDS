@@ -99,9 +99,9 @@ confluent.security.event.logger.destination.admin.security.protocol=PLAINTEXT
 confluent.security.event.logger.enable=true
 confluent.security.event.logger.exporter.kafka.topic.create=false
 confluent.security.event.logger.exporter.kafka.bootstrap.servers={{docker_compose_public_ip}}:29092,{{docker_compose_public_ip}}:39092,{{docker_compose_public_ip}}:49092
-confluent.security.event.logger.exporter.admin.security.protocol=PLAINTEXT
-# confluent.security.event.logger.exporter.admin.sasl.mechanism=SCRAM-SHA-512
-# confluent.security.event.logger.exporter.admin.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
+confluent.security.event.logger.exporter.kafka.security.protocol=PLAINTEXT
+# confluent.security.event.logger.exporter.kafka.sasl.mechanism=SCRAM-SHA-512
+# confluent.security.event.logger.exporter.kafka.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="admin" password="admin-secret";
 
 # metric.reporters=io.confluent.telemetry.reporter.TelemetryReporter
 # confluent.telemetry.exporter._c3.type=http
