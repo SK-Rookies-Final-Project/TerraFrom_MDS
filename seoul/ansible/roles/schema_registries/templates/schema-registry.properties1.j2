@@ -6,7 +6,7 @@ debug=false
 schema.compatibility.level=full
 schema.registry.group.id=schema-cluster-1
 
-kafkastore.bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+kafkastore.bootstrap.servers={{cp1_broker1_a_private_ip}}:9090,{{cp1_broker2_a_private_ip}}:9090,{{cp1_broker3_a_private_ip}}:9090
 kafkastore.security.protocol=SASL_PLAINTEXT
 kafkastore.sasl.mechanism=OAUTHBEARER
 kafkastore.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler

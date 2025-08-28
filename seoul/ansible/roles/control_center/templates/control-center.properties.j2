@@ -5,13 +5,6 @@ confluent.controlcenter.connect.connect-cluster1.cluster=http://{{cp1_connect1_a
 confluent.controlcenter.schema.registry.url=http://{{cp1_sr1_a_private_ip}}:8081,http://{{cp1_sr2_a_private_ip}}:8081
 #confluent.controlcenter.ksql.ksql-cluster1.url=http://ksql-1:8088
 
-# ⭐ 핵심 수정: Kafka 클러스터 설정 추가 (누락된 부분)
-confluent.controlcenter.kafka.cluster-1.bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
-confluent.controlcenter.kafka.cluster-1.security.protocol=SASL_PLAINTEXT
-confluent.controlcenter.kafka.cluster-1.sasl.mechanism=OAUTHBEARER
-confluent.controlcenter.kafka.cluster-1.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
-confluent.controlcenter.kafka.cluster-1.sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="admin" password="admin-secret" metadataServerUrls="http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090";
-
 confluent.controlcenter.internal.topics.partitions=12
 confluent.controlcenter.internal.topics.replication=3
 confluent.controlcenter.ui.autoupdate.enable=false
@@ -24,14 +17,14 @@ confluent.metrics.topic.partitions=12
 confluent.metrics.topic.replication=3
 confluent.monitoring.interceptor.topic.replication=3
 
-bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+bootstrap.servers={{cp1_broker1_a_private_ip}}:9090,{{cp1_broker2_a_private_ip}}:9090,{{cp1_broker3_a_private_ip}}:9090
 confluent.controlcenter.streams.security.protocol=SASL_PLAINTEXT
 confluent.controlcenter.rest.authentication.method=BEARER
 
 confluent.controlcenter.schema.registry.basic.auth.credentials.source=USER_INFO
 confluent.controlcenter.schema.registry.basic.auth.user.info=admin:admin-secret
 
-confluent.metadata.bootstrap.server.urls=http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090
+confluent.metadata.bootstrap.server.urls=http://{{cp1_broker1_a_private_ip}}:8090,http://{{cp1_broker2_a_private_ip}}:8090,http://{{cp1_broker3_a_private_ip}}:8090
 confluent.metadata.basic.auth.user.info=admin:admin-secret
 
 public.key.path=/var/ssl/private/public.pem

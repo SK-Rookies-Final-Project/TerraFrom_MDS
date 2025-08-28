@@ -1,4 +1,4 @@
-bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+bootstrap.servers={{cp1_broker1_a_private_ip}}:9090,{{cp1_broker2_a_private_ip}}:9090,{{cp1_broker3_a_private_ip}}:9090
 listeners=http://0.0.0.0:8083
 group.id=connect-cluster-1
 connector.client.config.override.policy=All
@@ -17,14 +17,14 @@ status.storage.replication.factor=3
 confluent.license.topic=_confluent-command
 
 consumer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
-consumer.confluent.monitoring.interceptor.bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+consumer.confluent.monitoring.interceptor.bootstrap.servers={{cp1_broker1_a_private_ip}}:9090,{{cp1_broker2_a_private_ip}}:9090,{{cp1_broker3_a_private_ip}}:9090
 consumer.confluent.monitoring.interceptor.security.protocol=SASL_PLAINTEXT
 consumer.confluent.monitoring.interceptor.sasl.mechanism=OAUTHBEARER
 consumer.confluent.monitoring.interceptor.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler
 consumer.confluent.monitoring.interceptor.sasl.jaas.config=org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required username="admin" password="admin-secret" metadataServerUrls="http://{{cp1_broker1_a_public_ip}}:8090,http://{{cp1_broker2_a_public_ip}}:8090,http://{{cp1_broker3_a_public_ip}}:8090";
 
 producer.interceptor.classes=io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
-producer.confluent.monitoring.interceptor.bootstrap.servers={{cp1_broker1_a_public_ip}}:9090,{{cp1_broker2_a_public_ip}}:9090,{{cp1_broker3_a_public_ip}}:9090
+producer.confluent.monitoring.interceptor.bootstrap.servers={{cp1_broker1_a_private_ip}}:9090,{{cp1_broker2_a_private_ip}}:9090,{{cp1_broker3_a_private_ip}}:9090
 producer.confluent.monitoring.interceptor.security.protocol=SASL_PLAINTEXT
 producer.confluent.monitoring.interceptor.sasl.mechanism=OAUTHBEARER
 producer.confluent.monitoring.interceptor.sasl.login.callback.handler.class=io.confluent.kafka.clients.plugins.auth.token.TokenUserLoginCallbackHandler

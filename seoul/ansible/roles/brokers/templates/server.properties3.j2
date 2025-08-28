@@ -2,7 +2,7 @@ broker.id=85
 process.roles=broker
 
 inter.broker.listener.name=BROKER
-advertised.listeners=INTERNAL://{{cp1_broker3_a_public_ip}}:9090,BROKER://{{cp1_broker3_a_public_ip}}:9091,CLIENT://{{cp1_broker3_a_public_ip}}:9092
+advertised.listeners=INTERNAL://{{cp1_broker3_a_private_ip}}:9090,BROKER://{{cp1_broker3_a_private_ip}}:9091,CLIENT://{{cp1_broker3_a_public_ip}}:9092
 listeners=INTERNAL://:9090,BROKER://:9091,CLIENT://:9092
 listener.security.protocol.map=CONTROLLER:PLAINTEXT,INTERNAL:SASL_PLAINTEXT,BROKER:SASL_PLAINTEXT,CLIENT:SASL_PLAINTEXT
 
