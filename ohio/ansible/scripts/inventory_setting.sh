@@ -141,8 +141,8 @@ get_instance_info() {
 
 # inventory.ini 파일 갱신 (백업 없음)
 update_inventory_file() {
-    local source_file="inventory.ini"
-    local target_file="inventory.ini"
+    local source_file="../inventory.ini"
+    local target_file="../inventory.ini"
     
     log_info "inventory.ini 파일을 갱신 중..."
     

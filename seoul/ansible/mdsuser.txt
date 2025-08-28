@@ -1,5 +1,7 @@
 admin:admin-secret
-auser:auser
-buser:buser
-cuser:cuser
-duser:duser
+ca:ca-secret
+ua:ua-secret
+ro:ro-secret
+dm:dm-secret
+dw:dw-secret
+dr:dr-secret
