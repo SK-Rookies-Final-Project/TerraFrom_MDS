@@ -1,0 +1,54 @@
+- name: Start Kafka Controllers
+  hosts: controllers
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Execute controller start script in background
+      shell: nohup /engn/confluent/scripts/start-controller.sh > /dev/null 2>&1 &
+      args:
+        executable: /bin/bash
+      register: controller_result
+
+- name: Start Kafka Brokers
+  hosts: brokers
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Execute broker start script in background
+      shell: nohup /engn/confluent/scripts/start-kafka.sh > /dev/null 2>&1 &
+      args:
+        executable: /bin/bash
+      register: broker_result
+  
+- name: Start Kafka Schema-Registries
+  hosts: schema_registries
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Execute schema-registry start script in background
+      shell: nohup /engn/confluent/scripts/start-schema-registry.sh > /dev/null 2>&1 &
+      args:
+        executable: /bin/bash
+      register: schema_result
+
+- name: Start Kafka Connect-Workers
+  hosts: connect_workers
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Execute connect-worker start script in background
+      shell: nohup /engn/confluent/scripts/start-connect.sh > /dev/null 2>&1 &
+      args:
+        executable: /bin/bash
+      register: connect_result
+
+- name: Start Kafka Control-Center
+  hosts: control_center
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Execute control_center start script in background
+      shell: nohup /engn/confluent/scripts/start-c3.sh > /dev/null 2>&1 &
+      args:
+        executable: /bin/bash
+      register: c3_result

@@ -1,0 +1,28 @@
+# create_topics.yml
+---
+- name: Wait for Kafka brokers to be ready
+  wait_for:
+    port: 9092
+    host: "{{ ansible_default_ipv4.address }}"
+    delay: 30
+    timeout: 300
+
+- name: Create audit-topic
+  shell: >
+    bash -c 'source /etc/profile.d/java.sh && 
+    /engn/confluent/bin/kafka-topics 
+    --bootstrap-server {{ ansible_default_ipv4.address }}:9092 
+    --create 
+    --topic audit-topic 
+    --partitions 3 
+    --replication-factor 3 
+    --config cleanup.policy=compact,delete 
+    --config retention.ms=604800000'
+  register: audit_topic_result
+  failed_when: 
+    - audit_topic_result.rc != 0
+    - "'already exists' not in audit_topic_result.stderr"
+
+- name: Display audit-topic creation result
+  debug:
+    var: audit_topic_result.stdout

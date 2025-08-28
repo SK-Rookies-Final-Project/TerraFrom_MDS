@@ -1,0 +1,139 @@
+# # admin 계정 권한 부여
+# - name: Create admin user account with SystemAdmin role
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:admin \
+#       --role SystemAdmin \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: admin_result
+#   ignore_errors: true
+
+# # ca 계정 권한 부여
+# - name: Create ca user with ClusterAdmin role
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:ca \
+#       --role ClusterAdmin \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: ca_cluster_result
+#   ignore_errors: true
+
+# # ua 계정 권한 부여
+# - name: Create ua user with UserAdmin role
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:ua \
+#       --role UserAdmin \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: ua_user_result
+#   ignore_errors: true
+
+# # ro 계정 권한 부여
+# - name: Create df user with ResourceOwner role for audit-topic
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:ro \
+#       --role ResourceOwner \
+#       --resource Topic:audit-topic \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: ro_resource_result
+#   ignore_errors: true
+
+# # dm 계정 권한 부여
+# - name: Create dm user with DeveloperManage role for audit-topic
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:dm \
+#       --role DeveloperManage \
+#       --resource Topic:audit-topic \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: dm_manage_result
+#   ignore_errors: true
+
+# # dw 계정 권한 부여
+# - name: Create dw user with DeveloperWrite role for audit-topic
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:dw \
+#       --role DeveloperWrite \
+#       --resource Topic:audit-topic \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: dw_write_result
+#   ignore_errors: true
+
+# - name: Create dr user with DeveloperRead role for audit-topic
+#   shell: |
+#     source /etc/profile.d/java.sh
+#     /engn/confluent/bin/confluent iam rbac role-binding create \
+#       --principal User:dr \
+#       --role DeveloperRead \
+#       --resource Topic:audit-topic \
+#       --kafka-cluster {{ cluster_uuid }}
+#   args:
+#     executable: /bin/bash
+#   environment:
+#     CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+#     CONFLUENT_PLATFORM_USERNAME: "admin"
+#     CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+#   register: dr_read_result
+#   ignore_errors: true
+
+
+- name: Create tt user with DeveloperRead role
+  shell: |
+    source /etc/profile.d/java.sh
+    /engn/confluent/bin/confluent iam rbac role-binding create \
+      --principal User:tt \
+      --role DeveloperRead \
+      --resource Topic:audit-topic \
+      --kafka-cluster {{ cluster_uuid }}
+  args:
+    executable: /bin/bash
+  environment:
+    CONFLUENT_PLATFORM_MDS_URL: "http://{{ ansible_default_ipv4.address }}:8090"
+    CONFLUENT_PLATFORM_USERNAME: "admin"
+    CONFLUENT_PLATFORM_PASSWORD: "admin-secret"
+  register: dr_read_result
+  ignore_errors: true

@@ -1,0 +1,32 @@
+# - name: Wait until metadata quorum is ready (leader elected)
+#   shell: |
+#     source /etc/profile.d/java.sh && \
+#     /engn/confluent/bin/kafka-metadata-quorum \
+#       --bootstrap-server {{ ansible_default_ipv4.address }}:9092 describe | grep -q 'Leader: '
+#   register: kmq
+#   retries: 30
+#   delay: 5
+#   until: kmq.rc == 0
+
+- name: Create SCRAM user accounts
+  shell: |
+    source /etc/profile.d/java.sh && \
+    /engn/confluent/bin/kafka-configs \
+      --bootstrap-server {{ ansible_default_ipv4.address }}:9092 \
+      --alter \
+      --add-config 'SCRAM-SHA-512=[password={{ item.password }}]' \
+      --entity-type users \
+      --entity-name {{ item.username }}
+  loop:
+    # - { username: "ca", password: "ca-secret" }
+    # - { username: "ua", password: "ua-secret" }
+    # - { username: "ro", password: "ro-secret" }
+    # - { username: "dm", password: "dm-secret" }
+    # - { username: "dw", password: "dw-secret" }
+    # - { username: "dr", password: "dr-secret" }
+    - { username: "tt", password: "tt-secret" }
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: ubuntu
+  register: scram_result

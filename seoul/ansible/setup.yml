@@ -1,0 +1,160 @@
+# - name: Install Java on all nodes
+#   hosts: all
+#   become: true
+#   roles:
+#     - java_setup
+
+# - name: Generate Kafka Cluster UUID
+#   hosts: brokers[0]
+#   become: true
+#   tasks:
+#     - name: Generate Kafka Cluster UUID
+#       command: >
+#         bash -c 'source /etc/profile.d/java.sh && /engn/confluent/bin/kafka-storage random-uuid'
+#       register: uuid_result
+#       changed_when: false
+#       run_once: true
+
+#     - name: Set cluster_uuid to all nodes
+#       add_host:
+#         name: "{{ item }}"
+#         groups: all
+#         cluster_uuid: "{{ uuid_result.stdout }}"
+#       loop: "{{ groups['all'] }}"
+
+# # 권한 설정 추가
+# - name: Setup Kafka Data Directories
+#   hosts: all
+#   become: true
+#   tasks:
+#     - name: Create Kafka data directories
+#       file:
+#         path: "{{ item }}"
+#         state: directory
+#         owner: ubuntu
+#         group: ubuntu
+#         mode: '0755'
+#         recurse: yes
+#       loop:
+#         - /appData/data/kafka-controller
+#         - /appData/data/kafka
+#         - /var/ssl/private
+#         - /appData/logs/confluent-kafka
+#         - /appData/logs/controller 
+#         - /engn/confluent
+
+# # 공개 키 복사
+# - name: Distribute public.pem to all Confluent components
+#   hosts: all
+#   become: true
+#   tasks:
+#     - name: Copy public.pem to target servers
+#       copy:
+#         src: ../../common/ssl/public.pem
+#         dest: /var/ssl/private/public.pem
+#         owner: root
+#         group: root
+#         mode: '0644'
+
+# # 프라이빗 키 복사
+# - name: Distribute tokenKeypair.pem to all Confluent components
+#   hosts: brokers, controllers
+#   become: true
+#   tasks:
+#     - name: Copy tokenKeypair.pem to target servers
+#       copy:
+#         src: ../../common/ssl/tokenKeypair.pem
+#         dest: /var/ssl/private/tokenKeypair.pem
+#         owner: root
+#         group: root
+#         mode: '0644'
+
+# # mdsuser.txt 복사
+# - name: Deploy mdsuser.txt to instance
+#   hosts: brokers
+#   become: yes
+#   tasks:
+#     - name: Ensure SSL directory exists
+#       file:
+#         path: /var/ssl/private
+#         state: directory
+#         owner: ubuntu
+#         group: ubuntu
+#         mode: '0755'
+#         recurse: yes
+
+#     - name: Copy mdsuser.txt file
+#       copy:
+#         src: mdsuser.txt
+#         dest: /var/ssl/private/mdsuser.txt
+#         owner: ubuntu
+#         group: ubuntu
+#         mode: '0644'
+
+# - name: Setup Kafka Controllers
+#   hosts: controllers
+#   become: true
+#   roles:
+#     - controllers
+
+# - name: Setup Kafka Brokers
+#   hosts: brokers
+#   become: true
+#   roles:
+#     - brokers
+
+# - name: Setup CP1_Connect_Workers
+#   hosts: connect_workers
+#   become: true
+#   roles:
+#     - connect_workers
+#     - rds_setup
+
+# - name: Setup CP1_Schema-Registries
+#   hosts: schema_registries
+#   become: true
+#   roles:
+#     - schema_registries
+
+# - name: Setup CP1_C3
+#   hosts: control_center
+#   become: true
+#   roles: 
+#     - control_center
+
+# - name: Install Java on all nodes
+#   hosts: all
+#   become: true
+#   roles:
+#     - jmx_setup
+
+# 서비스 시작
+# - name: Start All Confluent Services
+#   import_playbook: ansibles/start_services.yml
+
+# 사용자 계정 생성
+- name: Setup User Account
+  hosts: brokers[0]
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Include user creation tasks
+      include_tasks: ansibles/create_users.yml
+
+# 사용자 권한 부여
+- name: Setup RBAC Permissions
+  hosts: brokers[0]
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Include RBAC permission tasks
+      include_tasks: ansibles/rbac_permissions.yml
+
+# 토픽 생성
+- name: Create Kafka Topics
+  hosts: brokers[0]
+  become: true
+  become_user: ubuntu
+  tasks:
+    - name: Include topic creation tasks
+      include_tasks: ansibles/create_topics.yml
